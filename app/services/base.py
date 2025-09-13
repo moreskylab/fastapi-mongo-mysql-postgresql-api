@@ -21,26 +21,19 @@ class BaseService:
         self.db.add(item)
         self.db.commit()
         self.db.refresh(item)
-        logger.info(
-            f"Created {self.model.__name__} with ID {getattr(item, f'{self.model.__name__.lower()}_id')}"
-        )
+        logger.info(f"Created {self.model.__name__} with ID {getattr(item, 'id')}")
         return item
 
     def list_items(self, order_by: str | None = None) -> List[ModelType]:
         """Retrieve a list of all items, optionally ordered by a field."""
-        order_by = (
-            text(f"{self.model.__name__.lower()}_id")
-            if order_by is None
-            else text(order_by)
-        )
+        order_by = text("id") if order_by is None else text(order_by)
         items = self.db.query(self.model).order_by(order_by).all()
         logger.info(f"Retrieved {len(items)} {self.model.__name__}(s)")
         return items
 
     def get_item(self, item_id: int) -> ModelType:
         """Retrieve a single item by its ID."""
-        primary_key_field = getattr(self.model, f"{self.model.__name__.lower()}_id")
-        item = self.db.query(self.model).filter(primary_key_field == item_id).first()
+        item = self.db.query(self.model).filter(self.model.id == item_id).first()
         if not item:
             raise HTTPException(
                 status_code=404,
@@ -51,11 +44,7 @@ class BaseService:
 
     def update_item(self, item_id: int, item_data: BaseModel) -> ModelType:
         """Update an existing item with new data."""
-        item = (
-            self.db.query(self.model)
-            .filter(getattr(self.model, f"{self.model.__name__.lower()}_id") == item_id)
-            .first()
-        )
+        item = self.db.query(self.model).filter(self.model.id == item_id).first()
         if not item:
             logger.warning(f"{self.model.__name__} with ID {item_id} not found")
             raise HTTPException(
@@ -72,11 +61,7 @@ class BaseService:
 
     def delete_item(self, item_id: int) -> Dict[str, str]:
         """Delete an item from the database."""
-        item = (
-            self.db.query(self.model)
-            .filter(getattr(self.model, f"{self.model.__name__.lower()}_id") == item_id)
-            .first()
-        )
+        item = self.db.query(self.model).filter(self.model.id == item_id).first()
         if not item:
             logger.warning(
                 f"{self.model.__name__} with ID {item_id} not found for deletion"
