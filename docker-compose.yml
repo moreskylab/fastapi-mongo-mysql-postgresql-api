@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # MongoDB
+  mongodb:
+    image: mongo:7.0
+    container_name: fastapi_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: fastapi_app
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - fastapi_network
+
+  # MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: fastapi_mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: fastapi_app
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - fastapi_network
+
+  # PostgreSQL
+  postgresql:
+    image: postgres:15
+    container_name: fastapi_postgresql
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: fastapi_app
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    networks:
+      - fastapi_network
+
+  # FastAPI Application (optional)
+  # fastapi_app:
+  #   build: .
+  #   container_name: fastapi_app
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     DATABASE_URL_MONGODB: mongodb://mongodb:27017/fastapi_app
+  #     DATABASE_URL_MYSQL: mysql://user:password@mysql:3306/fastapi_app
+  #     DATABASE_URL_POSTGRESQL: postgresql://user:password@postgresql:5432/fastapi_app
+  #   depends_on:
+  #     - mongodb
+  #     - mysql
+  #     - postgresql
+  #   networks:
+  #     - fastapi_network
+
+volumes:
+  mongodb_data:
+  mysql_data:
+  postgresql_data:
+
+networks:
+  fastapi_network:
+    driver: bridge
