@@ -131,7 +131,7 @@ async def update_product(product_id: str, product_update: ProductUpdate):
         values = []
         
         # Build dynamic update query
-        for field, value in product_update.dict().items():
+        for field, value in product_update.model_dump().items():
             if value is not None:
                 update_fields.append(f"{field} = %s")
                 values.append(value)

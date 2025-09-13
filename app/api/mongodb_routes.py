@@ -31,7 +31,7 @@ async def create_user(user: UserCreate):
     """Create a new user in MongoDB"""
     try:
         db = get_mongo_database()
-        user_data = user.dict()
+        user_data = user.model_dump()
         user_data["id"] = str(uuid.uuid4())
         user_data["created_at"] = datetime.utcnow()
         user_data["updated_at"] = None
@@ -96,7 +96,7 @@ async def update_user(user_id: str, user_update: UserUpdate):
     """Update a user in MongoDB"""
     try:
         db = get_mongo_database()
-        update_data = {k: v for k, v in user_update.dict().items() if v is not None}
+        update_data = {k: v for k, v in user_update.model_dump().items() if v is not None}
         
         if not update_data:
             raise HTTPException(

@@ -129,7 +129,7 @@ async def update_order(order_id: str, order_update: OrderUpdate):
         param_count = 1
         
         # Build dynamic update query
-        for field, value in order_update.dict().items():
+        for field, value in order_update.model_dump().items():
             if value is not None:
                 update_fields.append(f"{field} = ${param_count}")
                 values.append(value)
