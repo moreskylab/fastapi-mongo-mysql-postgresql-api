@@ -1,4 +1,4 @@
-DOCKER_COMPOSE := $(shell which docker-compose)
+DOCKER_COMPOSE := docker compose
 DOCKER := $(shell which docker)
 
 # Start development
